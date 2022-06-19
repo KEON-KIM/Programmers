@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <queue>
+#include <algorithm>
 
 using namespace std;
 class Node
@@ -9,12 +10,12 @@ class Node
     private : 
         
     public :
-        Node* beforeNode;
-        Node* nextNode;
+        Node* beforeNode = nullptr;
+        Node* nextNode = nullptr;
 
         string value;
         Node(){};
-        Node(string str){value = str;}
+        Node(string str){value = str;};
         void print()
         {
             cout << value;
@@ -30,43 +31,36 @@ class Linkedlist
     public : 
         Linkedlist()
         {
-            head = Node();
-            tail = Node();
-            cout << "CREATE" << endl;
+            head.nextNode = &tail;
+            tail.beforeNode = &head;
         }
         void insert(string str)
         {
-            Node node = Node(str); // new node;
+            Node* node = new Node(str); // new node; 
 
-            if(head.nextNode == 0)
+            if(head.nextNode == &tail)
             {
-                node.beforeNode = &head;
-                node.nextNode = &tail;
-                head.nextNode = &node;
-                tail.beforeNode = &node;
-                cout << "FIRST IN : " << head.nextNode->value << endl;
+                node->beforeNode = &head;
+                node->nextNode = &tail;
+                head.nextNode = node;
+                tail.beforeNode = node;
             }
-
             else
             {
-                cout << "BEFORE : " << &head.nextNode << "/" << &node<< endl;
-                node.nextNode = head.nextNode;
-                node.beforeNode = &head;
-                head.nextNode->beforeNode = &node;
-                head.nextNode = &node;
-                cout << "AFTER IN" << endl;
-                cout << "NEXT : "<< head.nextNode->value << endl;
-                cout << "NEXT : "<< head.nextNode->nextNode->value << endl;
+                node->nextNode = head.nextNode;
+                node->beforeNode = &head;
+                head.nextNode->beforeNode = node;
+                head.nextNode = node;
             }
             s++;
         }
 
         void pop()
         {
-            Node* node = head.nextNode->nextNode;
+            Node* node = tail.beforeNode->beforeNode;
             if(node == 0) return;
-            head.nextNode = node;
-            node->beforeNode = &head;
+            tail.beforeNode = node;
+            node->nextNode = &tail;
 
             s--;
         }
@@ -76,6 +70,39 @@ class Linkedlist
         {
             if(!s) return 0;
             return head.nextNode;
+        }
+        int find(string str)
+        {   
+            int idx = 0;
+            Node* cursor = head.nextNode;
+            while(str != cursor->value)
+            {
+                if(idx >= s) return -1;
+                cursor = cursor->nextNode;
+                idx++;
+            }
+            return idx;
+        }
+        bool delete_node(string str)
+        {
+            Node* cursor = head.nextNode;
+            if(!s) return false;
+            while(str != cursor->value)
+            {
+                if(cursor == &tail || str == cursor->value)
+                    break;
+                cursor = cursor->nextNode;
+            }
+            if(cursor == &tail) return false;
+
+            Node* next = cursor->nextNode;
+            Node* before = cursor->beforeNode;
+            delete cursor;
+            next->beforeNode = before;
+            before->nextNode = next;
+            s--;
+
+            return true;
         }
 
         int size()
@@ -87,12 +114,22 @@ class Linkedlist
 int solution(int cacheSize, vector<string> cities) {
     int answer = 0;
     Linkedlist ll = Linkedlist();
-    ll.insert("sex");
-    cout << "=============" << endl;
-    ll.insert("fuck");
-    cout << "=============" << endl;
-    ll.insert("kkk");
-    cout << "=============" << endl;
+    for(string  str : cities)
+    {
+        transform(str.begin(), str.end(), str.begin(), ::tolower);
+        if(ll.delete_node(str)){
+            answer+=1;
+            ll.insert(str);
+        }
+        else
+        {
+            answer+=5;
+            ll.insert(str);
+            if(ll.size() > cacheSize)
+                ll.pop();
+        }
+    }
+    // cout << ll.top()->value << endl;
     // cout << ll.top()->value << endl;
     // ll.pop();
     // cout << ll.top()->value << endl;
@@ -101,7 +138,9 @@ int solution(int cacheSize, vector<string> cities) {
 
 int main()
 {
-    vector<string> cities;
-    solution(3, cities);
+    vector<string> cities
+        // = {"Jeju", "Pangyo", "Seoul", "NewYork", "LA", "Jeju", "Pangyo", "Seoul", "NewYork", "LA"};
+        = {"Jeju", "Pangyo", "Seoul", "Jeju", "Pangyo", "Seoul", "Jeju", "Pangyo", "Seoul"};
+    cout << solution(3, cities);
     return 0;
 }
