@@ -9,6 +9,198 @@ struct datas
     int index;
     int number;
     string head;
+    datas(int i, string h, int n)
+    {
+        this->index = i;
+        this->head = h;
+        this->number = n;
+    }
+};
+
+bool isNumber(char c) {
+    if (c >= '0' && c <= '9') {
+        return true;
+    }
+    return false;
+}
+ 
+bool compare(datas f1,  datas f2) {
+    if (f1.head == f2.head) 
+    {
+        if (f1.number  == f2.number) 
+        {
+            return f1.index < f2.index;
+        }
+        else 
+        {
+            return f1.number < f2.number;
+        }
+    }
+    else 
+    {
+        return f1.head < f2.head;
+    }
+}
+ 
+
+vector<string> solution(vector<string> files) 
+{
+    vector<string> answer;
+    vector<datas> datas_set;
+     for (int i = 0; i < files.size(); i++) {
+ 
+        string fileString = "";
+        for (int j = 0; j < files[i].length(); j++) 
+            fileString += tolower(files[i][j]);
+        
+        string HEAD = "";
+        string NUMBER = "";
+        int ptr = 0;
+ 
+        while (ptr <= fileString.length()) {
+            if (isNumber(fileString[ptr])) 
+                break;
+ 
+            HEAD += fileString[ptr];
+            ++ptr;
+        }
+ 
+        while (ptr <= fileString.length()) {
+            if (!isNumber(fileString[ptr])) 
+                break;
+            
+            NUMBER += fileString[ptr];
+            ++ptr;
+        }
+ 
+        datas_set.push_back(datas(i, HEAD, stoi(NUMBER)));
+    }
+
+    sort(datas_set.begin(), datas_set.end(), compare);
+    for(datas d : datas_set)
+    {
+        answer.push_back(files[d.index]);
+    }
+    
+    return answer;
+}
+
+int main()
+{
+    vector<string> answer;
+    vector<string> files 
+        // = {"img12.png", "img10.png", "img02.png", "img1.png", "IMG01.GIF", "img2.JPG"};
+        // = {"F-5 Freedom Fighter", "B-50 Superfortress", "A-10 Thunderbolt II", "F-14 Tomcat"};
+        = {"muzi1.png1", "MUZI1.png2", "MUZI1.png3", "muzi1.png4"};
+    answer = solution(files);
+    for(string str : answer)
+        cout << str << endl;
+    return 0;
+}
+
+
+/*#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+struct datas
+{
+    int index;
+    int number;
+    string head;
+    datas(int i, string h, int n)
+    {
+        this->index = i;
+        this->head = h;
+        this->number = n;
+    }
+};
+
+bool compare(datas f1,  datas f2) {
+    if (f1.head == f2.head) 
+    {
+        if (f1.number  == f2.number) 
+        {
+            return f1.index < f2.index;
+        }
+        else 
+        {
+            return f1.number < f2.number;
+        }
+    }
+    else 
+    {
+        return f1.head < f2.head;
+    }
+}
+ 
+
+vector<string> solution(vector<string> files) 
+{
+    vector<string> answer;
+    vector<datas> datas_set;
+    for(int t = 0; t < files.size(); t++)
+    {
+        string str = files[t];
+        string tmp = "";
+        string line[3];
+
+        int idx = 0;
+        bool num_flag = false;
+        for(int i = 0; i < str.length(); i++)
+        {
+            if(idx < 2)
+            {
+                if(str[i] - '0' < 10 && str[i] - '0' > -1 && idx < 2) // digit 
+                {
+                    if(!num_flag)
+                    {
+                        num_flag = true;
+                        line[idx] = tmp;
+                        tmp.clear();
+                        tmp += str[i];
+                        idx++;
+                    }
+                    else
+                        tmp+= str[i];
+                }
+                else // word
+                {
+                    if(num_flag)
+                    {
+                        num_flag = false;
+                        line[idx] = tmp;
+                        tmp.clear();
+                        tmp += str[i];
+                        idx++;
+                    }
+                    else
+                        tmp+=str[i];
+                }
+            }
+        }
+
+        transform(line[0].begin(), line[0].end(), line[0].begin(), ::tolower);
+        datas_set.push_back(datas(t, line[0], stoi(line[1])));
+    }
+
+    sort(datas_set.begin(), datas_set.end(), compare);
+    for(datas d : datas_set)
+    {
+        answer.push_back(files[d.index]);
+    }
+    
+    return answer;
+}
+
+
+struct datas
+{
+    int index;
+    int number;
+    string head;
     string tail;
     datas(int i, string h, string n, string t)
     {
@@ -21,7 +213,7 @@ struct datas
     // {
     //     cout << this->head << " / " << this->number << " / " << this->tail << endl;
     // }   
-    /*int cmp(string str1, string str2) // 0 : == / -1 : > / 1 : <
+    int cmp(string str1, string str2) // 0 : == / -1 : > / 1 : <
     {
         bool isDigit = false;
         int len = min(str1.length(), str2.length());
@@ -76,8 +268,8 @@ struct datas
             else
                 return -1;
         }
-    }*/
-    /*bool operator<(datas &right)
+    }
+    bool operator<(datas &right)
     {
         int h = cmp(this->head, right.head);
         cout << h << endl;
@@ -97,97 +289,6 @@ struct datas
 
         else
             return false;
-    }*/
+    }
 };
-
-bool compare(const datas& f1, const datas& f2) {
-    if (f1.head == f2.head) {
-        if (f1.number == f2.number) {
-            return f1.index < f2.index;
-        }
-        else {
-            return f1.number < f2.number;
-        }
-    }
-    else {
-        return f1.head < f2.head;
-    }
-}
- 
-
-vector<string> solution(vector<string> files) 
-{
-    vector<string> answer;
-    vector<datas> datas_set;
-    for(int t = 0; t < files.size(); t++)
-    {
-        string str = files[t];
-        string tmp = "";
-        string line[3];
-
-        int idx = 0;
-        bool num_flag = false;
-        for(int i = 0; i < str.length(); i++)
-        {
-            if(idx < 2)
-            {
-                if(str[i] - '0' < 10 && str[i] - '0' > -1 && idx < 2) // digit 
-                {
-                    if(!num_flag)
-                    {
-                        num_flag = true;
-                        line[idx] = tmp;
-                        tmp.clear();
-                        tmp += str[i];
-                        idx++;
-                    }
-                    else
-                        tmp+= str[i];
-                }
-                else // word
-                {
-                    if(num_flag)
-                    {
-                        num_flag = false;
-                        line[idx] = tmp;
-                        tmp.clear();
-                        tmp += str[i];
-                        idx++;
-                    }
-                    else
-                        tmp+=str[i];
-                }
-            }
-            else
-            {
-                tmp+=str[i];
-                if(i == str.length()-1 && idx >=2)
-                    line[idx] = tmp;
-            }
-        }
-        cout << t << endl;
-        datas_set.push_back(datas(t, line[0], line[1], line[2]));
-    }
-
-    sort(datas_set.begin(), datas_set.end(), compare);
-    for(datas d : datas_set)
-    {
-        string tmp = d.head + to_string(d.number) + d.tail;
-        answer.push_back(tmp);
-    }
-    
-    return answer;
-}
-
-int main()
-{
-    vector<string> answer;
-    vector<string> files 
-        // = {"img12.png", "img10.png", "img02.png", "img1.png", "IMG01.GIF", "img2.JPG"};
-        // = {"F-5 Freedom Fighter", "B-50 Superfortress", "A-10 Thunderbolt II", "F-14 Tomcat"};
-        = {"muzi1.png1", "MUZI1.png2", "MUZI1.png3", "muzi1.png4"};
-    answer = solution(files);
-    for(string str : answer)
-        cout << str << endl;
-    return 0;
-}
+*/
