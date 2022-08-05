@@ -1,6 +1,6 @@
 #include <string>
 #include <vector>
-#include <queue>
+#include <algorithm>
 #include <iostream>
 
 #define MAX 1001
@@ -28,49 +28,70 @@ void dfs(int idx, int dep, vector<vector<int>> &answer)
     answer[1].push_back(idx);
 }
 
-auto bigger = [](pipii &A, pipii &B) -> bool
-{
-    if(A.first == B.first)
-        return A.second.first > B.second.first;
-    else
-        return A.first < B.first;
+
+
+struct Node{
+    int x, y, index;
+    Node* left;
+    Node* right;
+    Node(int a, int b, int c){this->x = a; this->y = b; this->index = c;}
 };
+bool bigger(Node a, Node b)
+{
+    if(a.y == b.y)
+        return a.x < b.x;
+    return a.y > b.y;
+}
+void addNode(Node* parent, Node* child)
+{
+    if(child-> x < parent->x)
+    {
+        if(parent->left == nullptr)
+            parent->left = child;
+        else
+            addNode(parent->left, child);
+    }
+    else
+    {
+        if(parent->right == nullptr)
+            parent->right = child;
+        else
+            addNode(parent->right, child);
+    }
+}
+void preOrder(vector<int> &answer, Node* root)
+{
+    if(root == nullptr) return;
+    answer.push_back(root->index);
+    preOrder(answer, root->left);
+    preOrder(answer, root->right);
+}
+
+void postOrder(vector<int> &answer, Node* root)
+{
+    if(root == nullptr) return;
+    postOrder(answer, root->left);
+    postOrder(answer, root->right);
+    answer.push_back(root->index);
+}
+
 vector<vector<int>> solution(vector<vector<int>> nodeinfo) {
     vector<vector<int>> answer = {{}, {}};
-    priority_queue<pipii, vector<pipii>, decltype(bigger)> pQue(bigger); //y, {x, index}
+    vector<Node> node;
     
-    FOR(i, nodeinfo.size()){
-        pQue.push({nodeinfo[i][1],{nodeinfo[i][0], i+1}});
-        cout << "?" << endl;
-    }
-    int depth = -1;
-    int curh = INF;
-    while(!pQue.empty())
+    FOR(i, nodeinfo.size())
     {
-        int height = pQue.top().first;
-        int width = pQue.top().second.first;
-        int index = pQue.top().second.second;
-        pQue.pop();
-        // cout << curh <<"/" << depth<< endl;
-        // cout << height << "/" << width << "/" << index << endl;
-        if(curh > height)
-        {
-            curh = height;
-            depth++;
-        }
+        Node* tmp = new Node(nodeinfo[i][0], nodeinfo[i][1], i+1);
+        node.push_back(*tmp);
+    }
 
-        tree[depth].push_back(index);
-    }   
-    cout << depth << endl;
-    FOR(i, depth+1)
-    {
-        FOR(j, tree[i].size())
-        {
-            cout << tree[i][j] << " ";
-        }cout << endl;
-    }
-    int root = tree[0][0];
-    dfs(root, 1, answer);
+    sort(node.begin(), node.end(), bigger);
+    Node* root = &node[0];
+    for(int i = 1; i < node.size(); i++)    
+        addNode(root, &node[i]);
+
+    preOrder(answer[0], root);
+    postOrder(answer[1], root);
 
     return answer;
 }
