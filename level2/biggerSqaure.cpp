@@ -33,10 +33,8 @@ int solution(vector<vector<int>> board)
         FOR(j, m)
         {
             if(i < 1 || j < 1) continue;
-            cout << "FUCK" << endl;
             if(board[i-1][j-1])
             {
-                cout << "in" << endl;
                 dp[i][j] = min(dp[i-1][j], min(dp[i][j-1], dp[i-1][j-1])) + 1;
                 answer = max(answer, dp[i][j]);
             }
