@@ -1,170 +1,119 @@
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
 #define FOR(i, n) for(int i = 0; i < n; i++)
 using namespace std;
-void print(vector<int*> board)
+vector<int> board[3][2][2][2];
+int findQuery(vector<int> &info, int score)
 {
-	for(int* row : board)
+	for(int i : info) cout << i << " ";
+	cout << score << endl;
+	int result = 0;
+	FOR(i, 3)
 	{
-		FOR(i, 5)
+		if(info[0] != 3 && i != info[0]) continue;
+		FOR(j, 2)
 		{
-			cout << row[i] << " ";
-		}cout << endl;
-	}
-}
-
-int countMenu(vector<int*> board, int* row)
-{
-	int count = 0;
-	for(int *lrow : board)
-	{
-		FOR(i, 5)
-		{
-			if(i < 4){
-				if(!row[i]) continue;
-				if(lrow[i] != row[i]) break;
-			}
-			else
+			if(info[1] != 3 && j != info[1]) continue;
+			FOR(k, 2)
 			{
-				if(lrow[i] < row[i]) break;
-				else count++;
+				if(info[2] != 3 && k!= info[2]) continue;
+				FOR(l, 2)
+				{
+					if(info[3] != 3 && l!= info[3]) continue;
+					for(int s : board[i][j][k][l])
+						if( s >= score) result++;
+				}
 			}
 		}
 	}
-	return count;
+	return result;
 }
 vector<int> solution(vector<string> info, vector<string> query) {
     vector<int> answer;
-    vector<int*> board; // language, stack, ec, sf, score;
     for(string str : info)
     {
-    	int idx = 0;
-    	string tmp = "";
-    	int *row = new int[5]; 
-    	FOR(i, str.length())
+    	int score;
+    	string buff;
+    	vector<int> tmp;
+    	istringstream ss(str);
+    	while(getline(ss, buff, ' '))
     	{
-    		if(str[i] == ' ' || i == str.length()-1) 
-    		{
-    			cout << tmp << " / " << idx<< endl;
-    			if(!idx)
-    			{
-    				if(tmp == "java")
-    					row[idx] = 1;
-    				else if(tmp == "cpp")
-    					row[idx] = 2;
-    				else if(tmp == "python")
-    					row[idx] = 3;
-    				else
-    					cout << "err1";
-    			}
+    		if(buff == "cpp")
+    			tmp.push_back(0);
+    		else if(buff == "java")
+    			tmp.push_back(1);
+    		else if(buff == "python")
+    			tmp.push_back(2);
+    		
+    		else if(buff == "backend")
+    			tmp.push_back(0);
+    		else if(buff == "frontend")
+    			tmp.push_back(1);
+    		
+    		else if(buff == "junior")
+    			tmp.push_back(0);
+    		else if(buff == "senior")
+    			tmp.push_back(1);
 
-    			else if(idx == 1)
-    			{
-    				if(tmp == "backend")
-    					row[idx] = 1;
-    				else if(tmp == "frontend")
-    					row[idx] = 2;
-    				else
-    					cout << "err2";
-    			}
+    		else if(buff == "chicken")
+    			tmp.push_back(0);
+    		else if(buff == "pizza")
+    			tmp.push_back(1);
 
-    			else if(idx == 2)
-    			{
-    				if(tmp == "junior")
-    					row[idx] = 1;
-    				else if(tmp == "senior")
-    					row[idx] = 2;
-    				else
-    					cout << "err3";
-    			}
-
-    			else if(idx == 3)
-    			{
-    				if(tmp == "chicken")
-    					row[idx] = 1;
-    				else if(tmp == "pizza")
-    					row[idx] = 2;
-    				else
-    					cout << "err4";
-    			}
-
-    			else if(idx == 4){
-    				tmp += str[i];
-    				row[idx] = stoi(tmp); 
-    			}
-
-    			idx++;
-    			tmp = "";
-    			continue;
-    		}
-    		tmp += str[i];
+    		else
+    			score = stoi(buff);
     	}
-    	board.push_back(row);
+    	cout << score << endl;
+    	board[tmp[0]][tmp[1]][tmp[2]][tmp[3]].push_back(score);
     }
-    
+    cout << "++++++++++++++++++++++++" << endl;
     for(string str : query)
     {
-    	int idx = 0;
-    	string tmp = "";
-    	int *row = new int[5]; 
-    	FOR(i, str.length())
+    	int score;
+    	string buff;
+    	vector<int> tmp;
+    	istringstream ss(str);
+    	while(getline(ss, buff, ' '))
     	{
-    		if(str[i] == ' ' || i == str.length()-1) 
-    		{
-    			cout << tmp << " / " << idx<< endl;
-    			if(!idx)
-    			{
-    				if(tmp == "java")
-    					row[idx] = 1;
-    				else if(tmp == "cpp")
-    					row[idx] = 2;
-    				else if(tmp == "python")
-    					row[idx] = 3;
-    			}
+    		if(buff == "and") continue;
+    		if(buff == "cpp")
+    			tmp.push_back(0);
+    		else if(buff == "java")
+    			tmp.push_back(1);
+    		else if(buff == "python")
+    			tmp.push_back(2);
+    		else if(buff == "-")
+    			tmp.push_back(3);
 
-    			else if(idx == 1)
-    			{
-    				if(tmp == "backend")
-    					row[idx] = 1;
-    				else if(tmp == "frontend")
-    					row[idx] = 2;
-    			}
+    		else if(buff == "backend")
+    			tmp.push_back(0);
+    		else if(buff == "frontend")
+    			tmp.push_back(1);
+    		else if(buff == "-")
+    			tmp.push_back(2);
 
-    			else if(idx == 2)
-    			{
-    				if(tmp == "junior")
-    					row[idx] = 1;
-    				else if(tmp == "senior")
-    					row[idx] = 2;
-    			}
+    		else if(buff == "junior")
+    			tmp.push_back(0);
+    		else if(buff == "senior")
+    			tmp.push_back(1);
+    		else if(buff == "-")
+    			tmp.push_back(2);
 
-    			else if(idx == 3)
-    			{
-    				if(tmp == "chicken")
-    					row[idx] = 1;
-    				else if(tmp == "pizza")
-    					row[idx] = 2;
-    			}
-
-    			else if(idx == 4){
-    				tmp += str[i];
-    				row[idx] = stoi(tmp); 
-    			}
-
-    			if(tmp != "and") idx++;
-    			tmp = "";
-    			
-    			continue;
-    		}
-    		tmp += str[i];
+    		else if(buff == "chicken")
+    			tmp.push_back(0);
+    		else if(buff == "pizza")
+    			tmp.push_back(1);
+    		else if(buff == "-")
+    			tmp.push_back(2);
+    		else
+    			score = stoi(buff);
     	}
-    	answer.push_back(countMenu(board, row));
+    	cout << score << endl;
+    	answer.push_back(findQuery(tmp, score));
     }
-    cout << "====ANSWER == "<<endl;
-    for(int i : answer) cout << i <<  " ";
-    cout << endl; 
     return answer;
 }
 
@@ -185,6 +134,7 @@ int main()
 		"- and backend and senior and - 150",
 		"- and - and - and chicken 100",
 		"- and - and - and - 150"};
-	solution(info, query);
+	vector<int> answer = solution(info, query);
+	for(int i : answer) cout << i << " ";
 	return 0;
 }
