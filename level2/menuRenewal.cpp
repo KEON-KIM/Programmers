@@ -11,30 +11,38 @@
 
 using namespace std;
 
-int maxLen;
 int orderSize[LEN] = {0, };
 bool alpha[MAX][ALPHA];
 bool visited[ALPHA];
 map<string, int> countMenu;
 vector<string> orderVector;
-void dfs(string str, int len, int order)
+void dfs(string str, int len, int index, int order)
 {
-	// cout << str << len << endl;
-	if(str.length() >= len)
+	// cout << str << endl;
+	if(str.length() == len)
 	{
-
-		string tmp = str;
-		sort(tmp.begin(), tmp.end());
-		if(tmp != str) return;
-		if(countMenu.find(str) != countMenu.end()) 
-		{
-			countMenu[str]++;
-			orderSize[str.length()] = max(orderSize[str.length()], countMenu[str]);
-		}
-		else countMenu.insert({str, 0});
+		// cout << str << endl;
+		countMenu[str]++;
+		orderSize[len] = max(orderSize[len], countMenu[str]);
+		// string tmp = str;
+		// sort(tmp.begin(), tmp.end());
+		// if(tmp != str) return;
+		// if(countMenu.find(str) != countMenu.end()) 
+		// {
+		// 	countMenu[str]++;
+		// 	orderSize[str.length()] = max(orderSize[str.length()], countMenu[str]);
+		// }
+		// else countMenu.insert({str, 0});
 		return;
 	}
-	for(char c : orderVector[order])
+	for(int i = index; i < orderVector[order].length(); i++)
+	{
+		string tmp = str;
+		tmp += orderVector[order][i];
+		// cout << tmp << endl;
+		dfs(tmp, len, i+1, order);
+	}
+	/*for(char c : orderVector[order])
 	{
 		if(!visited[c - 'A'])
 		{
@@ -44,7 +52,7 @@ void dfs(string str, int len, int order)
 			dfs(tmp, len, order);
 			visited[c - 'A'] = false;
 		}
-	}
+	}*/
 
 	/*for(int i = 0; i < ALPHA; i++)
 		if(alpha[order][i] && !visited[i])
@@ -62,27 +70,33 @@ vector<string> solution(vector<string> orders, vector<int> course)
 	memset(alpha, false, sizeof(alpha));
    	FOR(i, orders.size())
     {
+    	sort(orderVector[i].begin(), orderVector[i].end());
     	// int l = orders[i].length();
     	// maxLen = max(maxLen, l);
-    	for(char c : orders[i])
-    		alpha[i][c - 'A'] = true;
-
-    	for(int len : course){
-			dfs("", len, i);
-    	}
+    	// for(char c : orders[i])
+    	// 	alpha[i][c - 'A'] = true;
+    	for(int len : course)
+			dfs("", len, 0, i);
     }
-   
+    vector<pair<int, string>> sorted;
     for(auto iter : countMenu)
-    {
-    	int len = iter.first.length();
+    	if(iter.second > 1)
+    		sorted.push_back({iter.second, iter.first});
+
+    for(pair<int, string> p : sorted)
+    	if(p.first == orderSize[p.second.length()])
+    		answer.push_back(p.second);
+    
+    	/*int len = iter.first.length();
     	int cnt = iter.second;
     	if(cnt && cnt == orderSize[len])
-    		answer.push_back(iter.first);
-    }
+    		answer.push_back(iter.first);*/
+    
 
     sort(answer.begin(), answer.end());
     return answer;
 }
+
 
 int main()
 {
