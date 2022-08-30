@@ -81,7 +81,7 @@ int solution(vector<vector<int>> board, int r, int c) {
                     cards.push_back(board[i][j]);
                 cardset[board[i][j]].push_back({i, j});
             }
-            
+
     sort(cards.begin(), cards.end());
     do
     {
@@ -89,7 +89,7 @@ int solution(vector<vector<int>> board, int r, int c) {
         pii cur = {r, c};
 
         pipii tmp;
-        tmpBoard = board;
+        tmpBoard = board; // 이부분 노~올라워라~
         FOR(i, cards.size())
         {
             tmp = bfs(cards[i], cur, tmpBoard); // 커서가 가르킬 카드까지
