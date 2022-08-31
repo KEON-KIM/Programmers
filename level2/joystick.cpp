@@ -15,7 +15,8 @@ int solution(string name) {
         int ind = i + 1;
         while (ind < len && name[ind] == 'A') ind++;
 
-        turn = min(turn, i + len - ind + min(i, len - ind));
+        turn = min(turn, 
+        	i + len - ind + min(i, len - ind));
     }
 
     answer += turn;
