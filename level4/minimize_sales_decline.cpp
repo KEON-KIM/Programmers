@@ -24,13 +24,14 @@ int dfs(int n, vector<int> &sales)
         int next = graph[n][i];
         s += dfs(next, sales); // 최소 subRoot값 모두 저장
     }
-
+    //Yes
     ret = min(ret, s + sales[n-1]); // 자신 노드 포함 
 
     FOR(i, graph[n].size())
     {
         int next = graph[n][i];
         int dts = s - dfs(next, sales); // 자신 노드 don't select
+
         dts += sales[next-1];
 
         FOR(j, graph[next].size())
@@ -39,7 +40,7 @@ int dfs(int n, vector<int> &sales)
             if(!graph[nnext].empty())
                dts += dfs(nnext, sales);
         }
-
+        //No
         ret = min(ret, dts);
     }
 
