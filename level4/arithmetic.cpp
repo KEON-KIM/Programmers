@@ -1,49 +1,51 @@
 #include <vector>
 #include <string>
-#include <iostream>
-
-#define MAX 102
-#define FOR(i, n) for(int i = 0; i < n; i++)
+#include <cstring>
+#define MAX 101
 using namespace std;
-bool visited[MAX] = {false, };
-int solution(vector<string> arr)
-{
-    int answer = 0;
 
-    FOR(i, arr.size())
+int dp[MAX][MAX][2];
+vector<string> arr;
+int sol(int l,int r,int k)
+{
+    int& ret = dp[l][r][k];
+    if(ret!=-1) return ret;
+    if(k) // max : ans + sum
     {
-        if(arr[i] == "-")
-        {
-            int num;
-            vector<string> tmp;
-            for(int j = i+1; j < arr.size(); j++) tmp.push_back(arr[j]);
-            if(!visited[i])
-            {
-                visited[i] = true;
-                num = solution(tmp);
-                if( num < stoi(arr[i+1]))
-                    return answer - num;
-                else
-                {
-                    answer -= stoi(arr[i+1]);
-                    i++;
-                }
-            }
-            
+        ret=-0x3f;
+        for(int i=l; i<=r; i++){
+            int lv,rv;
+            lv = l>i-1 ? stoi(arr[2*l]) : sol(l,i-1,1);
+
+            if(i+1>r) rv = stoi(arr[2*r+2]);
+            else if(arr[2*i+1]=="+") rv = sol(i+1,r,1);
+            else rv = sol(i+1,r,0);
+ 
+            if(arr[2*i+1]=="+") ret=max(lv+rv,ret);
+            else ret=max(lv-rv,ret);
         }
-        else if(arr[i] == "+") continue;
-        else answer += stoi(arr[i]);
     }
-
-    return answer;
+    else // min : ans -sum
+    {
+        ret=0x3f;
+        for(int i=l;i<=r;i++){
+            int lv,rv;
+            lv = l>i-1 ? stoi(arr[2*l]) : sol(l,i-1,0);
+            
+            if(i+1>r) rv = stoi(arr[2*r+2]);
+            else if(arr[2*i+1]=="+") rv = sol(i+1,r,0);
+            else rv = sol(i+1,r,1);
+ 
+            if(arr[2*i+1]=="+") ret=min(lv+rv,ret);
+            else ret=min(lv-rv,ret);
+        }        
+    }
+    return ret;
 }
-
-int main()
+ 
+int solution(vector<string> _arr)
 {
-    vector<string> arr 
-    // = {"1", "-", "3", "+", "5", "-", "8"};
-    // = {"5", "-", "3", "+", "1", "+", "2", "-", "4"};
-    = {"5", "-", "10", "-", "2", "-", "4", "+", "6", "+", "3", "-", "7", "+", "6", "+", "1"};
-    cout << solution(arr);
-    return 0;
+    memset(dp,-1,sizeof(dp));
+    arr=_arr;
+    return sol(0, arr.size()/2-1, 1);
 }
