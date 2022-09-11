@@ -11,10 +11,12 @@ int solution(vector<int> food_times, long long k) {
     int answer = 0;
     priority_queue<pii, vector<pii>, greater<pii>> pQue;
     FOR(i, food_times.size())
-    {
         pQue.push({food_times[i], i});
-    }
+    
     while()
+    {
+        
+    }
 
     return answer;
 }
